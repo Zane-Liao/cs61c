@@ -1,0 +1,4 @@
+1.grep -r
+2.ps- ux
+3.kill ID
+4.diff
