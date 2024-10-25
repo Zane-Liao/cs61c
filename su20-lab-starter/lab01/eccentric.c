@@ -2,7 +2,7 @@
 
 /* Only change any of these 4 values */
 #define V0 3
-#define V1 3
+#define V1 0
 #define V2 1
 #define V3 3
 
@@ -25,6 +25,7 @@ int main(void) {
   switch (V1) {
   case 0:
     printf("Yoshua\n");
+    break;
   case 1:
     printf("Triangle Man\n");
     break;
