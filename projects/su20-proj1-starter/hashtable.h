@@ -28,6 +28,10 @@ struct HashBucket {
 typedef struct HashTable {
   // -- TODO --
   // HINT: Take a look at createHashTable.
+  int size;
+  struct HashBucket **data;
+  unsigned int (*hashFunction)(void *);
+  int (*equalFunction)(void *, void *);
 } HashTable;
 
 /*
@@ -53,5 +57,7 @@ extern void insertData(HashTable *table, void *key, void *data);
  * It returns NULL if the key is not found. 
  */
 extern void *findData(HashTable *table, void *key);
+
+void FatalError(const char *message);
 
 #endif

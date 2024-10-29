@@ -71,6 +71,11 @@ int main(int argc, char **argv) {
 unsigned int stringHash(void *s) {
   char *string = (char *)s;
   // -- TODO --
+  unsigned int hashValue = 0;
+  while (*string != '\0') {
+    hashValue = (hashValue << 5) + *string++;
+  }
+  return hashValue % 1031;
 }
 
 /*
@@ -81,7 +86,18 @@ int stringEquals(void *s1, void *s2) {
   char *string1 = (char *)s1;
   char *string2 = (char *)s2;
   // -- TODO --
+  while (*string1 && (*string1 == *string2)) {
+    string1 += 1;
+    string2 += 1;
+  }
+
+  if (*string1 == '\0' && *string2 == '\0') {
+    return 1;
+  }
+
+  return 0;
 }
+
 
 /*
  * This function should read in every word from the dictionary and
@@ -101,6 +117,25 @@ int stringEquals(void *s1, void *s2) {
  */
 void readDictionary(char *dictName) {
   // -- TODO --
+  FILE *file = fopen(dictName, "r");
+  if (file == NULL) {
+    perror("Failed to open file.");
+    exit(1);
+  }
+  
+  char *word = (char *)malloc(100 * sizeof(char));
+  if (word == NULL) {
+    perror("Failed to allocate for word.");
+    exit(1);
+  }
+  while (fscanf(file, "%59s", word) == 1) {
+    if (findData(dictionary, word) == NULL) {
+      insertData(dictionary, word, word);
+    }
+  }
+  
+  fclose(file);
+  free(word);
 }
 
 /*
@@ -126,4 +161,34 @@ void readDictionary(char *dictName) {
  */
 void processInput() {
   // -- TODO --
+  char ch;
+  char *buffer = NULL;
+  int size = 0;
+  while ((ch = getchar()) != EOF) {
+    char *temp = realloc(buffer, size + 1);
+    if (temp == NULL) {
+      free(buffer);
+      perror("");
+      exit(1);
+    }
+    buffer = temp;
+    buffer[size++] = ch;
+  }
+
+  if (isspace(ch) || ispunct(ch)) {
+    char *ch1 = lowerCase(buffer, 0);
+    char *ch2 = lowerCase(buffer, 1);
+    if (stringEquals(dictionary->data, buffer) || stringEquals(dictionary->data, ch1) || stringEquals(dictionary->data, ch2)) {
+      printf("%s", buffer);
+    } else {
+      printf("%s [sic]", buffer);
+    }
+  }
+}
+
+char* lowerCase(char *ch, int i) {
+  for (; ch[i] != '\0'; i++) {
+    ch[i] = tolower((unsigned char)ch[i]);
+  }
+  return ch;
 }

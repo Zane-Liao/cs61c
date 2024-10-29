@@ -11,4 +11,6 @@ extern void readDictionary(char *dictName);
 
 extern void processInput();
 
+extern char* lowerCase();
+
 #endif
