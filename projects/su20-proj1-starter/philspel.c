@@ -33,6 +33,8 @@
  */
 HashTable *dictionary;
 
+#define INITIAL_CAPACITY 64
+
 /*
  * The MAIN routine.  You can safely print debugging information
  * to standard error (stderr) as shown and it will be ignored in 
@@ -161,29 +163,91 @@ void readDictionary(char *dictName) {
  */
 void processInput() {
   // -- TODO --
-  char ch;
-  char *buffer = NULL;
-  int size = 0;
-  while ((ch = getchar()) != EOF) {
-    char *temp = realloc(buffer, size + 1);
-    if (temp == NULL) {
-      free(buffer);
-      perror("");
-      exit(1);
+  int ch;
+    char *buffer = malloc(INITIAL_CAPACITY);
+    if (buffer == NULL) {
+        perror("Failed to allocate memory");
+        exit(1);
     }
-    buffer = temp;
-    buffer[size++] = ch;
-  }
 
-  if (isspace(ch) || ispunct(ch)) {
-    char *ch1 = lowerCase(buffer, 0);
-    char *ch2 = lowerCase(buffer, 1);
-    if (stringEquals(dictionary->data, buffer) || stringEquals(dictionary->data, ch1) || stringEquals(dictionary->data, ch2)) {
-      printf("%s", buffer);
-    } else {
-      printf("%s [sic]", buffer);
+    int size = 0;
+    int capacity = INITIAL_CAPACITY;
+
+    while ((ch = getchar()) != EOF) {
+        if (size >= capacity - 1) {
+            capacity *= 2;
+            char *temp = realloc(buffer, capacity);
+            if (temp == NULL) {
+                free(buffer);
+                perror("Failed to reallocate memory");
+                exit(1);
+            }
+            buffer = temp;
+        }
+
+        if (isspace(ch) || ispunct(ch)) {
+            if (size > 0) {
+                buffer[size] = '\0';  
+                char *ch1 = strdup(buffer);
+                char *ch2 = strdup(buffer);
+                if (ch1 == NULL || ch2 == NULL) {
+                    free(buffer);
+                    perror("Failed to duplicate buffer");
+                    exit(1);
+                }
+
+                lowerCase(ch1, 0);
+                lowerCase(ch2, 1);
+
+                if (stringEquals(dictionary->data, buffer) ||
+                    stringEquals(dictionary->data, ch1) ||
+                    stringEquals(dictionary->data, ch2)) {
+                    printf("%s", buffer);
+                } else {
+                    printf("%s [sic]", buffer);
+                }
+
+                free(ch1);
+                free(ch2);
+
+                size = 0;
+            }
+
+
+            putchar(ch);
+        } else {
+
+            buffer[size++] = ch;
+        }
     }
-  }
+
+    if (size > 0) {
+        buffer[size] = '\0';
+
+        char *ch1 = strdup(buffer);
+        char *ch2 = strdup(buffer);
+        if (ch1 == NULL || ch2 == NULL) {
+            free(buffer);
+            perror("Failed to duplicate buffer");
+            exit(1);
+        }
+
+        lowerCase(ch1, 0);
+        lowerCase(ch2, 1);
+
+        if (stringEquals(dictionary->data, buffer) ||
+            stringEquals(dictionary->data, ch1) ||
+            stringEquals(dictionary->data, ch2)) {
+            printf("%s", buffer);
+        } else {
+            printf("%s [sic]", buffer);
+        }
+
+        free(ch1);
+        free(ch2);
+    }
+
+    free(buffer);
 }
 
 char* lowerCase(char *ch, int i) {
