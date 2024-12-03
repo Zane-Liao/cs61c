@@ -21,22 +21,26 @@ dot:
 
     # Prologue
 
+    lw t0, 0(a0)
+    lw t1, 0(a0)
+    li t2, 1
+    li t3, 0
 
 loop_start:
+    bge t2, a2, loop_end
 
+    mul t3, t2, a3
+    add a0, a0, t3
 
-
-
-
-
-
-
-
-
+update_element:
+    mul t4, t0, t1
+    add t0, t0, t4
+    addi t2, t2, 1
+    j loop_start
 
 
 loop_end:
-
+    mv a0, t0
 
     # Epilogue
 
