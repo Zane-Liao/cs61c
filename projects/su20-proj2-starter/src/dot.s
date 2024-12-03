@@ -20,29 +20,41 @@
 dot:
 
     # Prologue
+    addi sp, sp, -12
+    sw s0, 0(sp)
+    sw s1, 4(sp)
+    sw s2, 8(sp)
 
-    lw t0, 0(a0)
-    lw t1, 0(a0)
-    li t2, 1
-    li t3, 0
+    li t0, 4
+    li t1, 4
+    li t2, 0
+    li s0, 0
 
 loop_start:
-    bge t2, a2, loop_end
+    mul t0, t0, a3  
+    mul t1, t1, a4
 
-    mul t3, t2, a3
-    add a0, a0, t3
+    lw s1, 0(a0)
+    lw s2, 0(a0)
 
-update_element:
-    mul t4, t0, t1
-    add t0, t0, t4
-    addi t2, t2, 1
+    mul t3, s1, s2
+    add s0, s0, t3
+	addi t2, t2, 1
+    beq t2, a2, loop_end
+
+    add a0, a0, t0
+    add a1, a1, t1
     j loop_start
 
-
 loop_end:
-    mv a0, t0
+
+    mv a0, s0
+
+	lw s0, 0(sp)
+    lw s1, 4(sp)
+    lw s2, 8(sp)
+    addi sp, sp, 12
 
     # Epilogue
 
-    
     ret
